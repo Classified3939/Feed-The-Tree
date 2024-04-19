@@ -1,9 +1,9 @@
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
+	name: "Feed The Tree",
+	id: "feedTheTreeC39",
+	author: "Classified39",
 	pointsName: "points",
-	modFiles: ["layers.js", "tree.js"],
+	modFiles: ["tree.js","vanilla.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -34,7 +34,26 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	return true
+	return hasUpgrade("v",11);
+}
+
+function randomBonus(){
+	let chance = Math.random() * 100;
+	let bonus = 20;
+	if (chance <= 1)
+	{
+		player.points = player.points.add(bonus);
+	}
+	else if (chance <= 3 && hasUpgrade("v",24)){
+		player.points = player.points.add(bonus);
+	}
+}
+
+function lowPointsBonus(gain){
+	if (!hasUpgrade("v",13)) return;
+	if (player.points.lte(10)) gain = gain.mul(3);
+	else if (player.points.lte(100) && hasUpgrade("v",22)) gain = gain.mul(3);
+	return gain;
 }
 
 // Calculate points/sec!
@@ -43,6 +62,9 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
+	if (hasUpgrade("v",15)) gain = new Decimal(3);
+	if (hasUpgrade("v",13)) gain = lowPointsBonus(gain);
+	if (hasUpgrade("v",21)) randomBonus();
 	return gain
 }
 
